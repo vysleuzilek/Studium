@@ -9,10 +9,13 @@ body {
   background: #0f1117;
   color: #e5e5e5;
   padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 header h1 {
   margin-bottom: 20px;
+  font-size: 28px;
 }
 
 section {
@@ -23,6 +26,84 @@ section {
 }
 
 h2 {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 18px;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.card {
+  background: #23273a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border-left: 4px solid #3b82f6;
+  font-size: 14px;
+}
+
+.termin-datum {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.termin-nazev {
+  font-size: 14px;
+}
+
+.card.termin {
+  border-left-color: #3b82f6;
+}
+
+.card.brzy {
+  border-left-color: #f59e0b;
+}
+
+.card.urgentni {
+  border-left-color: #ef4444;
+}
+
+.prazdno {
+  color: #6b7280;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.pridat-form {
+  display: flex;
+  gap: 8px;
+}
+
+.pridat-form input {
+  flex: 1;
+  background: #23273a;
+  border: 1px solid #343a4d;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #e5e5e5;
+  font-size: 14px;
+}
+
+.pridat-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.pridat-form button {
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pridat-form button:hover {
+  background: #2563eb;
 }
