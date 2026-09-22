@@ -16,7 +16,8 @@
       <section id="predmety">
         <h2>Moje předměty</h2>
         <div id="predmety-list" class="card-list"></div>
-        <form id="pridat-predmet-form" class="pridat-form">
+        <button type="button" id="predmet-form-toggle" class="btn-plus" title="Přidat předmět">+</button>
+        <form id="pridat-predmet-form" class="pridat-form hidden">
           <input type="text" id="novy-predmet" placeholder="Název předmětu" required>
           <button type="submit">Přidat</button>
         </form>
@@ -37,7 +38,8 @@
       <button id="zpet-btn" class="zpet-btn" type="button">&larr; Zpět na přehled</button>
       <h2 id="predmet-nadpis"></h2>
       <div id="sekce-list" class="card-list"></div>
-      <form id="sekce-form" class="pridat-form-sloupec">
+      <button type="button" id="sekce-form-toggle" class="btn-plus" title="Přidat sekci">+</button>
+      <form id="sekce-form" class="pridat-form-sloupec hidden">
         <input type="text" id="sekce-nazev-input" placeholder="Název sekce (např. 1. Úvod)" required>
         <div class="rte" id="sekce-popis-input" contenteditable="true"
              data-placeholder="Vlož text z Moodlu (Ctrl+C na Moodlu, Ctrl+V sem) – zachová tučné písmo a odstavce…"></div>
@@ -55,7 +57,8 @@
       <div class="podsekce">
         <h3>Materiály</h3>
         <div id="materialy-list" class="card-list"></div>
-        <form id="material-form" class="pridat-form-sloupec">
+        <button type="button" id="material-form-toggle" class="btn-plus" title="Přidat materiál">+</button>
+        <form id="material-form" class="pridat-form-sloupec hidden">
           <input type="text" id="material-nazev-input" placeholder="Název sekce (např. Materiály s přednáškovými tématy)" required>
           <div class="rte" id="material-popis-input" contenteditable="true"
                data-placeholder="Text / poznámky - nepovinné…"></div>
