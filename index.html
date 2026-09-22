@@ -12,18 +12,36 @@
   </header>
 
   <main>
-    <section id="predmety">
-      <h2>Moje předměty</h2>
-      <div id="predmety-list" class="card-list"></div>
-      <form id="pridat-predmet-form" class="pridat-form">
-        <input type="text" id="novy-predmet" placeholder="Název předmětu" required>
-        <button type="submit">Přidat</button>
-      </form>
-    </section>
+    <div id="view-domov">
+      <section id="predmety">
+        <h2>Moje předměty</h2>
+        <div id="predmety-list" class="card-list"></div>
+        <form id="pridat-predmet-form" class="pridat-form">
+          <input type="text" id="novy-predmet" placeholder="Název předmětu" required>
+          <button type="submit">Přidat</button>
+        </form>
+      </section>
 
-    <section id="terminy">
-      <h2>Nadcházející termíny</h2>
-      <div id="terminy-list" class="card-list"></div>
+      <section id="kalendar-sekce">
+        <div class="kalendar-hlavicka">
+          <button id="mesic-predchozi" class="kalendar-sipka" type="button">&lsaquo;</button>
+          <h2 id="kalendar-nadpis"></h2>
+          <button id="mesic-dalsi" class="kalendar-sipka" type="button">&rsaquo;</button>
+        </div>
+        <div id="kalendar-mrizka" class="kalendar-mrizka"></div>
+        <div id="kalendar-detail" class="kalendar-detail"></div>
+      </section>
+    </div>
+
+    <section id="view-predmet" class="hidden">
+      <button id="zpet-btn" class="zpet-btn" type="button">&larr; Zpět na přehled</button>
+      <h2 id="predmet-nadpis"></h2>
+      <div id="sekce-list" class="card-list"></div>
+      <form id="pridat-sekci-form" class="pridat-form-sloupec">
+        <input type="text" id="nova-sekce-nazev" placeholder="Název sekce (např. 1. Úvod)" required>
+        <textarea id="nova-sekce-popis" placeholder="Poznámky / obsah (nepovinné)" rows="3"></textarea>
+        <button type="submit">Přidat sekci</button>
+      </form>
     </section>
   </main>
 
