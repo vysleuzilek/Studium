@@ -104,49 +104,35 @@ h3 {
   font-style: italic;
 }
 
-/* Akordeon (sekce, materiály) - minimalistický vzhled: */
-/* jen malá šipka + čistý název, žádný velký barevný pruh   */
+/* Akordeon (sekce, materiály) - původní vzhled s modrým pruhem */
 
 .akordeon {
-  background: transparent;
-  border-left: none;
   padding: 0;
-  border-radius: 6px;
   overflow: hidden;
 }
 
 .akordeon-hlavicka {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 7px 6px;
+  padding: 10px 14px;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  border-radius: 6px;
-  transition: background 0.1s ease;
-}
-
-.akordeon-hlavicka:hover {
-  background: #1c2030;
+  font-weight: 600;
 }
 
 .akordeon .sipka {
-  order: -1;
   transition: transform 0.15s ease;
-  color: #6b7280;
-  font-size: 10px;
-  width: 10px;
-  flex-shrink: 0;
+  color: #9ca3af;
+  font-size: 12px;
 }
 
 .akordeon.otevrena .sipka {
-  transform: rotate(90deg);
+  transform: rotate(180deg);
 }
 
 .akordeon-telo {
   display: none;
-  padding: 4px 6px 12px 26px;
+  padding: 0 14px 14px;
 }
 
 .akordeon.otevrena .akordeon-telo {
@@ -246,6 +232,27 @@ h3 {
 
 .podsekce:last-child {
   margin-bottom: 0;
+}
+
+/* Kulaté tlačítko "+" pro schování/zobrazení formuláře na přidání */
+
+.btn-plus {
+  background: #2b3049;
+  border: none;
+  color: #e5e5e5;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-plus:hover {
+  background: #3b82f6;
 }
 
 /* Formuláře */
