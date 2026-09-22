@@ -259,10 +259,52 @@ document.getElementById("sekce-form").addEventListener("submit", async (e) => {
   nactiSekce();
 });
 
-/* ---------- MATERIÁLY (odkaz i/nebo text, uvnitř sekce) ---------- */
+/* ---------- MATERIÁLY (text i/nebo víc dokumentů, uvnitř sekce) ---------- */
 
 function materialyRef() {
   return collection(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "materialy");
+}
+
+function pridejDokumentRadek(nazev = "", odkaz = "") {
+  const container = document.getElementById("dokumenty-editor");
+  const radek = document.createElement("div");
+  radek.className = "dokument-radek";
+
+  const nazevInput = document.createElement("input");
+  nazevInput.type = "text";
+  nazevInput.className = "dokument-nazev";
+  nazevInput.placeholder = "Název dokumentu (např. DS1_01 Obsah, ERD-I.pdf)";
+  nazevInput.value = nazev;
+
+  const odkazInput = document.createElement("input");
+  odkazInput.type = "url";
+  odkazInput.className = "dokument-odkaz";
+  odkazInput.placeholder = "Odkaz (URL)";
+  odkazInput.value = odkaz;
+
+  const odebratBtn = document.createElement("button");
+  odebratBtn.type = "button";
+  odebratBtn.className = "btn-icon dokument-odebrat";
+  odebratBtn.title = "Odebrat";
+  odebratBtn.textContent = "✕";
+  odebratBtn.addEventListener("click", () => radek.remove());
+
+  radek.appendChild(nazevInput);
+  radek.appendChild(odkazInput);
+  radek.appendChild(odebratBtn);
+  container.appendChild(radek);
+}
+
+document.getElementById("pridat-dokument-btn").addEventListener("click", () => pridejDokumentRadek());
+
+function ziskejDokumenty() {
+  const dokumenty = [];
+  document.querySelectorAll("#dokumenty-editor .dokument-radek").forEach(r => {
+    const nazev = r.querySelector(".dokument-nazev").value.trim();
+    const odkaz = r.querySelector(".dokument-odkaz").value.trim();
+    if (nazev && odkaz) dokumenty.push({ nazev, odkaz });
+  });
+  return dokumenty;
 }
 
 async function nactiMaterialy() {
@@ -277,6 +319,16 @@ async function nactiMaterialy() {
 
   serazenaPole(snapshot).forEach(d => {
     const m = d.data();
+    // zpětná kompatibilita se starším jedním polem "odkaz"
+    const dokumenty = (m.dokumenty && m.dokumenty.length)
+      ? m.dokumenty
+      : (m.odkaz ? [{ nazev: m.nazev, odkaz: m.odkaz }] : []);
+
+    const dokumentyHtml = dokumenty.length
+      ? `<div class="dokumenty-seznam">${dokumenty.map(dk =>
+          `<a href="${dk.odkaz}" target="_blank" rel="noopener">${dk.nazev}</a>`).join("")}</div>`
+      : "";
+
     list.innerHTML += `
       <div class="card akordeon" data-id="${d.id}">
         <div class="akordeon-hlavicka">
@@ -285,8 +337,8 @@ async function nactiMaterialy() {
         </div>
         <div class="akordeon-telo">
           ${m.popis ? `<div class="rte-zobrazeni">${m.popis}</div>` : ""}
+          ${dokumentyHtml}
           <div class="akordeon-akce">
-            ${m.odkaz ? `<a class="btn-maly" href="${m.odkaz}" target="_blank" rel="noopener">Otevřít odkaz &rarr;</a>` : ""}
             <button type="button" class="btn-maly material-upravit" data-id="${d.id}">Upravit</button>
             <button type="button" class="btn-maly btn-smazat material-smazat" data-id="${d.id}">Smazat</button>
           </div>
@@ -305,9 +357,20 @@ async function nactiMaterialy() {
       const dokument = snap.docs.find(d => d.id === el.dataset.id);
       if (!dokument) return;
       const data = dokument.data();
+
       document.getElementById("material-nazev-input").value = data.nazev;
-      document.getElementById("material-odkaz-input").value = data.odkaz || "";
       document.getElementById("material-popis-input").innerHTML = data.popis || "";
+
+      document.getElementById("dokumenty-editor").innerHTML = "";
+      const dokumenty = (data.dokumenty && data.dokumenty.length)
+        ? data.dokumenty
+        : (data.odkaz ? [{ nazev: "", odkaz: data.odkaz }] : []);
+      if (dokumenty.length) {
+        dokumenty.forEach(dk => pridejDokumentRadek(dk.nazev, dk.odkaz));
+      } else {
+        pridejDokumentRadek();
+      }
+
       editMaterialId = el.dataset.id;
       document.getElementById("material-submit-btn").textContent = "Uložit změny";
       document.getElementById("material-zrusit-btn").classList.remove("hidden");
@@ -329,8 +392,9 @@ async function nactiMaterialy() {
 function zresetujMaterialForm() {
   editMaterialId = null;
   document.getElementById("material-nazev-input").value = "";
-  document.getElementById("material-odkaz-input").value = "";
   document.getElementById("material-popis-input").innerHTML = "";
+  document.getElementById("dokumenty-editor").innerHTML = "";
+  pridejDokumentRadek();
   document.getElementById("material-submit-btn").textContent = "Přidat materiál";
   document.getElementById("material-zrusit-btn").classList.add("hidden");
 }
@@ -340,15 +404,15 @@ document.getElementById("material-zrusit-btn").addEventListener("click", zresetu
 document.getElementById("material-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const nazev = document.getElementById("material-nazev-input").value.trim();
-  const odkaz = document.getElementById("material-odkaz-input").value.trim();
   const popis = sanitizeHtml(document.getElementById("material-popis-input").innerHTML);
+  const dokumenty = ziskejDokumenty();
   if (!nazev) return;
-  if (!odkaz && !popis) {
-    alert("Zadej aspoň odkaz, nebo text - jedno z toho appka potřebuje.");
+  if (!popis && dokumenty.length === 0) {
+    alert("Zadej aspoň text, nebo jeden dokument (název + odkaz).");
     return;
   }
 
-  const data = { nazev, odkaz: odkaz || null, popis: popis || null };
+  const data = { nazev, popis: popis || null, dokumenty, odkaz: null };
 
   if (editMaterialId) {
     await updateDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "materialy", editMaterialId), data);
