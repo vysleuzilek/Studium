@@ -98,6 +98,11 @@ h3 {
   border-left-color: #3b82f6;
 }
 
+.termin-odkaz {
+  display: inline-block;
+  margin-top: 8px;
+}
+
 .prazdno {
   color: #6b7280;
   font-size: 14px;
