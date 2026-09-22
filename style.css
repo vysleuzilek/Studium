@@ -30,11 +30,17 @@ h2 {
   font-size: 18px;
 }
 
+h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #9ca3af;
+}
+
 .hidden {
   display: none;
 }
 
-/* Karty (předměty, sekce, termíny) */
+/* Karty */
 
 .card-list {
   display: flex;
@@ -52,23 +58,34 @@ h2 {
 }
 
 .predmet-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.predmet-otevrit {
   cursor: pointer;
-  transition: background 0.15s ease;
+  flex: 1;
 }
 
-.predmet-card:hover {
-  background: #2b3049;
+.mini-akce {
+  display: flex;
+  gap: 4px;
 }
 
-.sekce-nazev {
-  font-weight: 600;
-  margin-bottom: 4px;
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 3px 7px;
+  border-radius: 4px;
 }
 
-.sekce-popis {
-  font-size: 13px;
-  color: #b3b7c4;
-  white-space: pre-wrap;
+.btn-icon:hover {
+  background: #343a4d;
+  color: #e5e5e5;
 }
 
 .termin-datum {
@@ -87,6 +104,101 @@ h2 {
   font-style: italic;
 }
 
+/* Akordeon (sekce, poznámky) */
+
+.akordeon {
+  padding: 0;
+  overflow: hidden;
+}
+
+.akordeon-hlavicka {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.akordeon .sipka {
+  transition: transform 0.15s ease;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.akordeon.otevrena .sipka {
+  transform: rotate(180deg);
+}
+
+.akordeon-telo {
+  display: none;
+  padding: 0 14px 14px;
+}
+
+.akordeon.otevrena .akordeon-telo {
+  display: block;
+}
+
+.rte-zobrazeni {
+  font-size: 13px;
+  color: #d1d5db;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.rte-zobrazeni p {
+  margin-bottom: 8px;
+}
+
+.akordeon-akce {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-maly {
+  background: #2b3049;
+  border: none;
+  color: #e5e5e5;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-maly:hover {
+  background: #343a4d;
+}
+
+.btn-smazat:hover {
+  background: #7f1d1d;
+}
+
+/* Materiály (odkazy) */
+
+.material-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.material-card a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.material-card a:hover {
+  text-decoration: underline;
+}
+
+.podsekce {
+  margin-bottom: 24px;
+}
+
+.podsekce:last-child {
+  margin-bottom: 0;
+}
+
 /* Formuláře */
 
 .pridat-form {
@@ -100,9 +212,12 @@ h2 {
   gap: 8px;
 }
 
+.pridat-form input {
+  flex: 1;
+}
+
 .pridat-form input,
-.pridat-form-sloupec input,
-.pridat-form-sloupec textarea {
+.pridat-form-sloupec input {
   background: #23273a;
   border: 1px solid #343a4d;
   border-radius: 6px;
@@ -112,24 +227,42 @@ h2 {
   font-family: inherit;
 }
 
-.pridat-form input {
-  flex: 1;
-}
-
-.pridat-form-sloupec textarea {
-  resize: vertical;
-}
-
 .pridat-form input:focus,
 .pridat-form-sloupec input:focus,
-.pridat-form-sloupec textarea:focus {
+.rte:focus {
   outline: none;
   border-color: #3b82f6;
 }
 
+/* Rich text pole (vkládání z Moodlu) */
+
+.rte {
+  background: #23273a;
+  border: 1px solid #343a4d;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #e5e5e5;
+  font-size: 14px;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.rte:empty:before {
+  content: attr(data-placeholder);
+  color: #6b7280;
+}
+
+.rte p {
+  margin-bottom: 8px;
+}
+
+.form-akce {
+  display: flex;
+  gap: 8px;
+}
+
 .pridat-form button,
-.pridat-form-sloupec button,
-.zpet-btn {
+.pridat-form-sloupec button[type="submit"] {
   background: #3b82f6;
   border: none;
   border-radius: 6px;
@@ -141,12 +274,33 @@ h2 {
 }
 
 .pridat-form button:hover,
-.pridat-form-sloupec button:hover {
+.pridat-form-sloupec button[type="submit"]:hover {
   background: #2563eb;
+}
+
+.btn-sekundarni {
+  background: #2b3049;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: #e5e5e5;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-sekundarni:hover {
+  background: #343a4d;
 }
 
 .zpet-btn {
   background: #2b3049;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
   margin-bottom: 16px;
 }
 
