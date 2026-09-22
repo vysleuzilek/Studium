@@ -16,18 +16,49 @@ let aktualniSekceId = null;
 let editSekceId = null;
 let editPoznamkaId = null;
 
-/* ---------- Bezpečné vložení textu zkopírovaného z Moodlu ---------- */
+/* ---------- Bezpečné a čisté vložení textu zkopírovaného z Moodlu ---------- */
+/* Necháme jen strukturu (tučné, odstavce, seznamy) - žádné ikonky, barvy,
+   podtržení ani jiné zbytky Moodle designu. */
+
+const POVOLENE_TAGY = new Set(["P", "BR", "B", "STRONG", "I", "EM", "UL", "OL", "LI"]);
 
 function sanitizeHtml(html) {
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
-  tpl.content.querySelectorAll("script, style, iframe, object, embed, link, meta").forEach(el => el.remove());
-  tpl.content.querySelectorAll("*").forEach(el => {
-    [...el.attributes].forEach(attr => {
-      if (/^on/i.test(attr.name)) el.removeAttribute(attr.name);
+
+  // Obrázky, ikonky a další nechtěné prvky pryč úplně
+  tpl.content.querySelectorAll("img, script, style, iframe, object, embed, link, meta, svg, video, audio, picture, source").forEach(el => el.remove());
+
+  function vycisti(rodic) {
+    [...rodic.children].forEach(el => {
+      vycisti(el);
+      if (!POVOLENE_TAGY.has(el.tagName)) {
+        // Prvek, co nechceme (span, div, a, font...) - necháme jen jeho obsah
+        while (el.firstChild) {
+          el.parentNode.insertBefore(el.firstChild, el);
+        }
+        el.remove();
+      } else {
+        // Povolený tag - smažeme z něj všechny atributy (style, class...)
+        [...el.attributes].forEach(attr => el.removeAttribute(attr.name));
+      }
     });
-  });
+  }
+
+  vycisti(tpl.content);
   return tpl.innerHTML.trim();
+}
+
+/* ---------- Pořadí položek (podle času vytvoření, ne podle Firestore) ---------- */
+
+function serazenaPole(snapshot) {
+  return snapshot.docs.slice().sort((a, b) => {
+    const pa = a.data().poradi;
+    const pb = b.data().poradi;
+    const ka = typeof pa === "number" ? pa : -1;
+    const kb = typeof pb === "number" ? pb : -1;
+    return ka - kb;
+  });
 }
 
 /* ---------- PŘEDMĚTY ---------- */
@@ -42,7 +73,7 @@ async function nactiPredmety() {
     return;
   }
 
-  snapshot.forEach(d => {
+  serazenaPole(snapshot).forEach(d => {
     const p = d.data();
     list.innerHTML += `
       <div class="card predmet-card">
@@ -85,7 +116,7 @@ document.getElementById("pridat-predmet-form").addEventListener("submit", async 
   const input = document.getElementById("novy-predmet");
   const nazev = input.value.trim();
   if (!nazev) return;
-  await addDoc(collection(db, "predmety"), { nazev });
+  await addDoc(collection(db, "predmety"), { nazev, poradi: Date.now() });
   input.value = "";
   nactiPredmety();
 });
@@ -141,7 +172,7 @@ async function nactiSekce() {
     return;
   }
 
-  snapshot.forEach(d => {
+  serazenaPole(snapshot).forEach(d => {
     const s = d.data();
     list.innerHTML += `
       <div class="card akordeon" data-id="${d.id}">
@@ -223,7 +254,7 @@ document.getElementById("sekce-form").addEventListener("submit", async (e) => {
   if (editSekceId) {
     await updateDoc(doc(db, "predmety", aktualniPredmetId, "sekce", editSekceId), { nazev, popis });
   } else {
-    await addDoc(sekceRef(), { nazev, popis });
+    await addDoc(sekceRef(), { nazev, popis, poradi: Date.now() });
   }
   zresetujSekceForm();
   nactiSekce();
@@ -245,7 +276,7 @@ async function nactiMaterialy() {
     return;
   }
 
-  snapshot.forEach(d => {
+  serazenaPole(snapshot).forEach(d => {
     const m = d.data();
     list.innerHTML += `
       <div class="card material-card">
@@ -269,7 +300,7 @@ document.getElementById("material-form").addEventListener("submit", async (e) =>
   const nazev = document.getElementById("material-nazev-input").value.trim();
   const odkaz = document.getElementById("material-odkaz-input").value.trim();
   if (!nazev || !odkaz) return;
-  await addDoc(materialyRef(), { nazev, odkaz });
+  await addDoc(materialyRef(), { nazev, odkaz, poradi: Date.now() });
   document.getElementById("material-nazev-input").value = "";
   document.getElementById("material-odkaz-input").value = "";
   nactiMaterialy();
@@ -291,7 +322,7 @@ async function nactiPoznamky() {
     return;
   }
 
-  snapshot.forEach(d => {
+  serazenaPole(snapshot).forEach(d => {
     const p = d.data();
     list.innerHTML += `
       <div class="card akordeon" data-id="${d.id}">
@@ -359,7 +390,7 @@ document.getElementById("poznamka-form").addEventListener("submit", async (e) =>
   if (editPoznamkaId) {
     await updateDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "poznamky", editPoznamkaId), { nazev, popis });
   } else {
-    await addDoc(poznamkyRef(), { nazev, popis });
+    await addDoc(poznamkyRef(), { nazev, popis, poradi: Date.now() });
   }
   zresetujPoznamkaForm();
   nactiPoznamky();
