@@ -111,6 +111,10 @@ async function nactiPredmety() {
   });
 }
 
+document.getElementById("predmet-form-toggle").addEventListener("click", () => {
+  document.getElementById("pridat-predmet-form").classList.toggle("hidden");
+});
+
 document.getElementById("pridat-predmet-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const input = document.getElementById("novy-predmet");
@@ -118,6 +122,7 @@ document.getElementById("pridat-predmet-form").addEventListener("submit", async 
   if (!nazev) return;
   await addDoc(collection(db, "predmety"), { nazev, poradi: Date.now() });
   input.value = "";
+  document.getElementById("pridat-predmet-form").classList.add("hidden");
   nactiPredmety();
 });
 
@@ -219,6 +224,7 @@ function pripojAkordeonUdalosti() {
       editSekceId = el.dataset.id;
       document.getElementById("sekce-submit-btn").textContent = "Uložit změny";
       document.getElementById("sekce-zrusit-btn").classList.remove("hidden");
+      document.getElementById("sekce-form").classList.remove("hidden");
       document.getElementById("sekce-nazev-input").scrollIntoView({ behavior: "smooth", block: "center" });
     });
   });
@@ -240,7 +246,12 @@ function zresetujSekceForm() {
   document.getElementById("sekce-popis-input").innerHTML = "";
   document.getElementById("sekce-submit-btn").textContent = "Přidat sekci";
   document.getElementById("sekce-zrusit-btn").classList.add("hidden");
+  document.getElementById("sekce-form").classList.add("hidden");
 }
+
+document.getElementById("sekce-form-toggle").addEventListener("click", () => {
+  document.getElementById("sekce-form").classList.toggle("hidden");
+});
 
 document.getElementById("sekce-zrusit-btn").addEventListener("click", zresetujSekceForm);
 
@@ -374,6 +385,7 @@ async function nactiMaterialy() {
       editMaterialId = el.dataset.id;
       document.getElementById("material-submit-btn").textContent = "Uložit změny";
       document.getElementById("material-zrusit-btn").classList.remove("hidden");
+      document.getElementById("material-form").classList.remove("hidden");
       document.getElementById("material-nazev-input").scrollIntoView({ behavior: "smooth", block: "center" });
     });
   });
@@ -397,7 +409,12 @@ function zresetujMaterialForm() {
   pridejDokumentRadek();
   document.getElementById("material-submit-btn").textContent = "Přidat materiál";
   document.getElementById("material-zrusit-btn").classList.add("hidden");
+  document.getElementById("material-form").classList.add("hidden");
 }
+
+document.getElementById("material-form-toggle").addEventListener("click", () => {
+  document.getElementById("material-form").classList.toggle("hidden");
+});
 
 document.getElementById("material-zrusit-btn").addEventListener("click", zresetujMaterialForm);
 
