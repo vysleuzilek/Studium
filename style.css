@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #0f1117;
+  color: #e5e5e5;
+  padding: 20px;
+}
+
+header h1 {
+  margin-bottom: 20px;
+}
+
+section {
+  background: #1a1d27;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
