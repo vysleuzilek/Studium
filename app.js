@@ -14,7 +14,7 @@ let aktualniPredmetId = null;
 let aktualniPredmetNazev = "";
 let aktualniSekceId = null;
 let editSekceId = null;
-let editPoznamkaId = null;
+let editMaterialId = null;
 
 /* ---------- Bezpečné a čisté vložení textu zkopírovaného z Moodlu ---------- */
 /* Necháme jen strukturu (tučné, odstavce, seznamy) - žádné ikonky, barvy,
@@ -145,10 +145,9 @@ async function otevriPredmet(id, nazev) {
 async function otevriSekci(id, nazev) {
   aktualniSekceId = id;
   document.getElementById("sekce-nadpis").textContent = `${aktualniPredmetNazev} – ${nazev}`;
-  zresetujPoznamkaForm();
+  zresetujMaterialForm();
   zobrazView("view-sekce");
   await nactiMaterialy();
-  await nactiPoznamky();
 }
 
 document.getElementById("zpet-btn").addEventListener("click", otevriDomov);
@@ -260,7 +259,7 @@ document.getElementById("sekce-form").addEventListener("submit", async (e) => {
   nactiSekce();
 });
 
-/* ---------- MATERIÁLY (ODKAZY UVNITŘ SEKCE) ---------- */
+/* ---------- MATERIÁLY (odkaz i/nebo text, uvnitř sekce) ---------- */
 
 function materialyRef() {
   return collection(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "materialy");
@@ -272,21 +271,53 @@ async function nactiMaterialy() {
   list.innerHTML = "";
 
   if (snapshot.empty) {
-    list.innerHTML = "<p class='prazdno'>Zatím žádné materiály.</p>";
+    list.innerHTML = "<p class='prazdno'>Zatím žádné materiály. Přidej první níže.</p>";
     return;
   }
 
   serazenaPole(snapshot).forEach(d => {
     const m = d.data();
     list.innerHTML += `
-      <div class="card material-card">
-        <a href="${m.odkaz}" target="_blank" rel="noopener">${m.nazev}</a>
-        <button type="button" class="btn-icon material-smazat" data-id="${d.id}" title="Smazat">🗑</button>
+      <div class="card akordeon" data-id="${d.id}">
+        <div class="akordeon-hlavicka">
+          <span>${m.nazev}</span>
+          <span class="sipka">▾</span>
+        </div>
+        <div class="akordeon-telo">
+          ${m.popis ? `<div class="rte-zobrazeni">${m.popis}</div>` : ""}
+          <div class="akordeon-akce">
+            ${m.odkaz ? `<a class="btn-maly" href="${m.odkaz}" target="_blank" rel="noopener">Otevřít odkaz &rarr;</a>` : ""}
+            <button type="button" class="btn-maly material-upravit" data-id="${d.id}">Upravit</button>
+            <button type="button" class="btn-maly btn-smazat material-smazat" data-id="${d.id}">Smazat</button>
+          </div>
+        </div>
       </div>`;
   });
 
+  document.querySelectorAll("#materialy-list .akordeon-hlavicka").forEach(el => {
+    el.addEventListener("click", () => el.closest(".akordeon").classList.toggle("otevrena"));
+  });
+
+  document.querySelectorAll(".material-upravit").forEach(el => {
+    el.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const snap = await getDocs(materialyRef());
+      const dokument = snap.docs.find(d => d.id === el.dataset.id);
+      if (!dokument) return;
+      const data = dokument.data();
+      document.getElementById("material-nazev-input").value = data.nazev;
+      document.getElementById("material-odkaz-input").value = data.odkaz || "";
+      document.getElementById("material-popis-input").innerHTML = data.popis || "";
+      editMaterialId = el.dataset.id;
+      document.getElementById("material-submit-btn").textContent = "Uložit změny";
+      document.getElementById("material-zrusit-btn").classList.remove("hidden");
+      document.getElementById("material-nazev-input").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+
   document.querySelectorAll(".material-smazat").forEach(el => {
-    el.addEventListener("click", async () => {
+    el.addEventListener("click", async (e) => {
+      e.stopPropagation();
       if (confirm("Smazat tento materiál?")) {
         await deleteDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "materialy", el.dataset.id));
         nactiMaterialy();
@@ -295,105 +326,38 @@ async function nactiMaterialy() {
   });
 }
 
+function zresetujMaterialForm() {
+  editMaterialId = null;
+  document.getElementById("material-nazev-input").value = "";
+  document.getElementById("material-odkaz-input").value = "";
+  document.getElementById("material-popis-input").innerHTML = "";
+  document.getElementById("material-submit-btn").textContent = "Přidat materiál";
+  document.getElementById("material-zrusit-btn").classList.add("hidden");
+}
+
+document.getElementById("material-zrusit-btn").addEventListener("click", zresetujMaterialForm);
+
 document.getElementById("material-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const nazev = document.getElementById("material-nazev-input").value.trim();
   const odkaz = document.getElementById("material-odkaz-input").value.trim();
-  if (!nazev || !odkaz) return;
-  await addDoc(materialyRef(), { nazev, odkaz, poradi: Date.now() });
-  document.getElementById("material-nazev-input").value = "";
-  document.getElementById("material-odkaz-input").value = "";
-  nactiMaterialy();
-});
-
-/* ---------- POZNÁMKY (BLOKY UVNITŘ SEKCE) ---------- */
-
-function poznamkyRef() {
-  return collection(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "poznamky");
-}
-
-async function nactiPoznamky() {
-  const snapshot = await getDocs(poznamkyRef());
-  const list = document.getElementById("poznamky-list");
-  list.innerHTML = "";
-
-  if (snapshot.empty) {
-    list.innerHTML = "<p class='prazdno'>Zatím žádné poznámky.</p>";
+  const popis = sanitizeHtml(document.getElementById("material-popis-input").innerHTML);
+  if (!nazev) return;
+  if (!odkaz && !popis) {
+    alert("Zadej aspoň odkaz, nebo text - jedno z toho appka potřebuje.");
     return;
   }
 
-  serazenaPole(snapshot).forEach(d => {
-    const p = d.data();
-    list.innerHTML += `
-      <div class="card akordeon" data-id="${d.id}">
-        <div class="akordeon-hlavicka">
-          <span>${p.nazev}</span>
-          <span class="sipka">▾</span>
-        </div>
-        <div class="akordeon-telo">
-          <div class="rte-zobrazeni">${p.popis || ""}</div>
-          <div class="akordeon-akce">
-            <button type="button" class="btn-maly poznamka-upravit" data-id="${d.id}">Upravit</button>
-            <button type="button" class="btn-maly btn-smazat poznamka-smazat" data-id="${d.id}">Smazat</button>
-          </div>
-        </div>
-      </div>`;
-  });
+  const data = { nazev, odkaz: odkaz || null, popis: popis || null };
 
-  document.querySelectorAll("#poznamky-list .akordeon-hlavicka").forEach(el => {
-    el.addEventListener("click", () => el.closest(".akordeon").classList.toggle("otevrena"));
-  });
-
-  document.querySelectorAll(".poznamka-upravit").forEach(el => {
-    el.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      const snap = await getDocs(poznamkyRef());
-      const dokument = snap.docs.find(d => d.id === el.dataset.id);
-      if (!dokument) return;
-      const data = dokument.data();
-      document.getElementById("poznamka-nazev-input").value = data.nazev;
-      document.getElementById("poznamka-popis-input").innerHTML = data.popis || "";
-      editPoznamkaId = el.dataset.id;
-      document.getElementById("poznamka-submit-btn").textContent = "Uložit změny";
-      document.getElementById("poznamka-zrusit-btn").classList.remove("hidden");
-      document.getElementById("poznamka-nazev-input").scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-  });
-
-  document.querySelectorAll(".poznamka-smazat").forEach(el => {
-    el.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (confirm("Smazat tuto poznámku?")) {
-        await deleteDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "poznamky", el.dataset.id));
-        nactiPoznamky();
-      }
-    });
-  });
-}
-
-function zresetujPoznamkaForm() {
-  editPoznamkaId = null;
-  document.getElementById("poznamka-nazev-input").value = "";
-  document.getElementById("poznamka-popis-input").innerHTML = "";
-  document.getElementById("poznamka-submit-btn").textContent = "Přidat poznámku";
-  document.getElementById("poznamka-zrusit-btn").classList.add("hidden");
-}
-
-document.getElementById("poznamka-zrusit-btn").addEventListener("click", zresetujPoznamkaForm);
-
-document.getElementById("poznamka-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nazev = document.getElementById("poznamka-nazev-input").value.trim();
-  const popis = sanitizeHtml(document.getElementById("poznamka-popis-input").innerHTML);
-  if (!nazev) return;
-
-  if (editPoznamkaId) {
-    await updateDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "poznamky", editPoznamkaId), { nazev, popis });
+  if (editMaterialId) {
+    await updateDoc(doc(db, "predmety", aktualniPredmetId, "sekce", aktualniSekceId, "materialy", editMaterialId), data);
   } else {
-    await addDoc(poznamkyRef(), { nazev, popis, poradi: Date.now() });
+    data.poradi = Date.now();
+    await addDoc(materialyRef(), data);
   }
-  zresetujPoznamkaForm();
-  nactiPoznamky();
+  zresetujMaterialForm();
+  nactiMaterialy();
 });
 
 /* ---------- KALENDÁŘ ---------- */
