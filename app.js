@@ -528,6 +528,7 @@ function zobrazDenDetail(rok, mesic, den) {
     <div class="card termin">
       <div class="termin-datum">${datumTxt}${u.predmet ? " · " + u.predmet : ""}</div>
       <div class="termin-nazev">${u.nazev}</div>
+      ${u.odkaz ? `<a class="btn-maly termin-odkaz" href="${u.odkaz}" target="_blank" rel="noopener">Otevřít v Moodlu &rarr;</a>` : ""}
     </div>`).join("");
 }
 
