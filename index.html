@@ -37,11 +37,44 @@
       <button id="zpet-btn" class="zpet-btn" type="button">&larr; Zpět na přehled</button>
       <h2 id="predmet-nadpis"></h2>
       <div id="sekce-list" class="card-list"></div>
-      <form id="pridat-sekci-form" class="pridat-form-sloupec">
-        <input type="text" id="nova-sekce-nazev" placeholder="Název sekce (např. 1. Úvod)" required>
-        <textarea id="nova-sekce-popis" placeholder="Poznámky / obsah (nepovinné)" rows="3"></textarea>
-        <button type="submit">Přidat sekci</button>
+      <form id="sekce-form" class="pridat-form-sloupec">
+        <input type="text" id="sekce-nazev-input" placeholder="Název sekce (např. 1. Úvod)" required>
+        <div class="rte" id="sekce-popis-input" contenteditable="true"
+             data-placeholder="Vlož text z Moodlu (Ctrl+C na Moodlu, Ctrl+V sem) – zachová tučné písmo, emoji i odstavce…"></div>
+        <div class="form-akce">
+          <button type="submit" id="sekce-submit-btn">Přidat sekci</button>
+          <button type="button" id="sekce-zrusit-btn" class="btn-sekundarni hidden">Zrušit úpravu</button>
+        </div>
       </form>
+    </section>
+
+    <section id="view-sekce" class="hidden">
+      <button id="zpet-sekce-btn" class="zpet-btn" type="button">&larr; Zpět na předmět</button>
+      <h2 id="sekce-nadpis"></h2>
+
+      <div class="podsekce">
+        <h3>Materiály</h3>
+        <div id="materialy-list" class="card-list"></div>
+        <form id="material-form" class="pridat-form">
+          <input type="text" id="material-nazev-input" placeholder="Název (např. Studijní materiál - téma 1)" required>
+          <input type="url" id="material-odkaz-input" placeholder="Odkaz (URL)" required>
+          <button type="submit" id="material-submit-btn">Přidat</button>
+        </form>
+      </div>
+
+      <div class="podsekce">
+        <h3>Poznámky</h3>
+        <div id="poznamky-list" class="card-list"></div>
+        <form id="poznamka-form" class="pridat-form-sloupec">
+          <input type="text" id="poznamka-nazev-input" placeholder="Název bloku (např. Kontrolní otázky)" required>
+          <div class="rte" id="poznamka-popis-input" contenteditable="true"
+               data-placeholder="Text, poznámky, vzorce…"></div>
+          <div class="form-akce">
+            <button type="submit" id="poznamka-submit-btn">Přidat poznámku</button>
+            <button type="button" id="poznamka-zrusit-btn" class="btn-sekundarni hidden">Zrušit úpravu</button>
+          </div>
+        </form>
+      </div>
     </section>
   </main>
 
