@@ -7,7 +7,7 @@
   {
     "nazev": "DS1_cv-02_ERD-I: seminář 29.9. má být hotov do tohoto data",
     "datum": "2026-10-05T21:59:00+00:00",
-    "predmet": "USII/FDS1 (ZS, 2026/2027) UT-12"
+    "predmet": "USII/FDS1 (ZS, 2026/2027) UT-14"
   },
   {
     "nazev": "Cvičení 03 - odevzdání řešení má být hotov do tohoto data",
@@ -17,6 +17,16 @@
   {
     "nazev": "První cvičení - odevzdání má být hotov do tohoto data",
     "datum": "2026-10-11T21:59:00+00:00",
+    "predmet": "USII/FPZD (ZS, 2026/2027) "
+  },
+  {
+    "nazev": "Odevzdání 2B (cv1) - ERD má být hotov do tohoto data",
+    "datum": "2026-10-12T22:00:00+00:00",
+    "predmet": "USII/FDS1 (ZS, 2026/2027) UT-14"
+  },
+  {
+    "nazev": "Druhé cvičení - odevzdání má být hotov do tohoto data",
+    "datum": "2026-10-18T21:59:00+00:00",
     "predmet": "USII/FPZD (ZS, 2026/2027) "
   }
 ]
