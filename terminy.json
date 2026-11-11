@@ -15,9 +15,19 @@
     "predmet": "USII/FISY - 2026"
   },
   {
-    "nazev": "Cvičení 08 - odevzdání má být hotov do tohoto data",
+    "nazev": "Cvičení 08 - odevzdání obou souborů má být hotov do tohoto data",
     "datum": "2026-11-15T22:59:00+00:00",
     "predmet": "USII/FISY - 2026"
+  },
+  {
+    "nazev": "DS1_cv-10_Souhrn-II: 10.11. má být hotov do tohoto data",
+    "datum": "2026-11-16T22:59:00+00:00",
+    "predmet": "USII/FDS1 (ZS, 2026/2027) UT-14"
+  },
+  {
+    "nazev": "Cvičení 7 - odevzdání má být hotov do tohoto data",
+    "datum": "2026-11-20T22:59:00+00:00",
+    "predmet": "USII/FPZD (ZS, 2026/2027) "
   },
   {
     "nazev": "DS1_cv-01_Access I: 22.9.2026  (DOBROVOLNÝ - do konce semestru) má být hotov do tohoto data",
